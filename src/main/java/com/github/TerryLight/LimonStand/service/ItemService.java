@@ -2,6 +2,8 @@ package com.github.TerryLight.LimonStand.service;
 
 import com.github.TerryLight.LimonStand.domain.Item;
 import com.github.TerryLight.LimonStand.repository.ItemRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -12,7 +14,12 @@ public class ItemService {
         this.itemRepository = itemRepository;
     }
 
-    public List<Item> getAll(){
+    public Flux<Item> getAll() {
+
         return itemRepository.getAll();
+    }
+
+    public Mono<Item> get(String id){
+        return itemRepository.get( Integer.parseInt(id));
     }
 }
