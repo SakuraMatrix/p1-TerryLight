@@ -20,7 +20,9 @@ import java.nio.file.Paths;
 
 public class App {
     public static void main(String[] args) throws URISyntaxException {
+        Path indexHTML= Paths.get(App.class.getResource("/index.html").toURI());
         Path errorHTML= Paths.get(App.class.getResource("/error.html").toURI());
+
 
         CqlSession session = CqlSession.builder().build();
         ItemRepository itemRepository = new ItemRepository(session);
@@ -34,10 +36,16 @@ public class App {
                         routes.get("/items", (request, response) ->
                                 response.send(itemService.getAll().map(App::toByteBuf)
                                         .log("http-server")))
+                                /*.post("/items", (request,response)->
+                                        request.receive().then().map()*/
                             .get("/items/{param}",(request, response) ->
                                     response.send(itemService.get(request.param("param")).map(App::toByteBuf)
                                             .log("http-server")))
-                            .get("/test",(request,response) ->
+
+                                .get("/",(request,response) ->
+                                                response.sendFile(indexHTML))
+
+                                .get("/error",(request,response) ->
                                     response.status(404).addHeader("Message", "Goofed")
                                             .sendFile(errorHTML))
 
