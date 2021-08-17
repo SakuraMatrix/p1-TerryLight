@@ -1,7 +1,10 @@
 package com.github.TerryLight.LimonStand;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.TerryLight.LimonStand.domain.Item;
 import com.github.TerryLight.LimonStand.repository.ItemRepository;
 import com.github.TerryLight.LimonStand.service.ItemService;
 import io.netty.buffer.ByteBuf;
@@ -36,8 +39,14 @@ public class App {
                         routes.get("/items", (request, response) ->
                                 response.send(itemService.getAll().map(App::toByteBuf)
                                         .log("http-server")))
-                                /*.post("/items", (request,response)->
-                                        request.receive().then().map()*/
+
+
+                            .post("/items", (request,response)->
+                                   response.send(request.receive().asString()
+                                                   .map(App::parseItem)
+                                                   .map(App::toByteBuf)
+                                                   .log("http-server")))
+
                             .get("/items/{param}",(request, response) ->
                                     response.send(itemService.get(request.param("param")).map(App::toByteBuf)
                                             .log("http-server")))
@@ -68,4 +77,18 @@ public class App {
         }
         return ByteBufAllocator.DEFAULT.buffer().writeBytes(out.toByteArray());
     }
-}
+
+
+static Item parseItem(String str){
+    Item item = null;
+    try {
+        item = OBJECT_MAPPER.readValue(str, Item.class);
+    } catch (JsonProcessingException ex) {
+        String[] params = str.split("&");
+        int id = Integer.parseInt(params[0].split("=")[1]);
+        String name = params[1].split("=")[1];
+        double price = Double.parseDouble(params[2].split("=")[1]);
+        item = new Item(id, name, price);
+    }
+    return item;
+}}
