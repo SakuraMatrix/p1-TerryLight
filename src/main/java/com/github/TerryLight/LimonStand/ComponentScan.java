@@ -1,2 +1,4 @@
-package com.github.TerryLight.LimonStand;public @interface ComponentScan {
+package com.github.TerryLight.LimonStand;
+
+public @interface ComponentScan {
 }

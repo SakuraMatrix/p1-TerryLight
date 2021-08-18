@@ -9,7 +9,9 @@ import com.github.TerryLight.LimonStand.repository.ItemRepository;
 import com.github.TerryLight.LimonStand.service.ItemService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import reactor.core.publisher.Mono;
+import reactor.netty.DisposableServer;
 import reactor.netty.http.server.HttpServer;
 
 import javax.xml.xpath.XPath;
@@ -19,56 +21,29 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 
 
 public class App {
     public static void main(String[] args) throws URISyntaxException {
-        Path indexHTML= Paths.get(App.class.getResource("/index.html").toURI());
-        Path errorHTML= Paths.get(App.class.getResource("/error.html").toURI());
+
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+        applicationContext.getBean(HttpServer.class).bindUntilJavaShutdown(Duration.ofSeconds(60), null);
+
+       // CqlSession session = applicationContext.getBean(CqlSession.class);
+
+       // ItemService itemService= applicationContext.getBean(ItemService.class);
 
 
-        CqlSession session = CqlSession.builder().build();
-        ItemRepository itemRepository = new ItemRepository(session);
-        ItemService itemService= new ItemService(itemRepository);
-        HttpServer.create()   // Prepares an HTTP server ready for configuration
-                .port(8080)    // Configures the port number as zero, this will let the system pick up
-                // an ephemeral port when binding the server
-                .route(routes ->
-                        // The server will respond only on POST requests
-                        // where the path starts with /test and then there is path parameter
-                        routes.get("/items", (request, response) ->
-                                response.send(itemService.getAll().map(App::toByteBuf)
-                                        .log("http-server")))
-
-
-                            .post("/items", (request,response)->
-                                   response.send(request.receive().asString()
-                                                   .map(App::parseItem)
-                                                   .map(App::toByteBuf)
-                                                   .log("http-server")))
-
-                            .get("/items/{param}",(request, response) ->
-                                    response.send(itemService.get(request.param("param")).map(App::toByteBuf)
-                                            .log("http-server")))
-
-                                .get("/",(request,response) ->
-                                                response.sendFile(indexHTML))
-
-                                .get("/error",(request,response) ->
-                                    response.status(404).addHeader("Message", "Goofed")
-                                            .sendFile(errorHTML))
-
-                )
-                .bindNow()
-                .onDispose()
-                .block(); // Starts the server in a blocking fashion, and waits for it to finish its initialization
-
+      //  applicationContext.getBean(DisposableServer.class)
+        //        .onDispose()
+          //      .block(); // Starts the server in a blocking fashion, and waits for it to finish its initialization
 
     }
 
-    static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+//    static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    static ByteBuf toByteBuf(Object o){
+  /*  static ByteBuf toByteBuf(Object o){
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try{
             OBJECT_MAPPER.writeValue(out, o);
@@ -76,10 +51,10 @@ public class App {
             ex.printStackTrace();
         }
         return ByteBufAllocator.DEFAULT.buffer().writeBytes(out.toByteArray());
-    }
+    }*/
 
 
-static Item parseItem(String str){
+/*static Item parseItem(String str){
     Item item = null;
     try {
         item = OBJECT_MAPPER.readValue(str, Item.class);
@@ -91,4 +66,7 @@ static Item parseItem(String str){
         item = new Item(id, name, price);
     }
     return item;
-}}
+}*/
+
+
+}

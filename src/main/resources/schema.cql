@@ -1,4 +1,4 @@
-CREATE KEYSPACE IF NOT EXISTS pokemart WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+CREATE KEYSPACE IF NOT EXISTS limonstand WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 
 USE limonstand;
 
