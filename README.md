@@ -10,18 +10,58 @@ Each order will decrease the amount of stock, so it should restock from a suppli
 
 Users may choose additional toppings for added charge.
 
-Users may purchase an order as a guest or create an account for additional rewards or discounts
-
 At the end of the day, it should provide a list of the expenses made and save it.
 
 Technologies to be included:
-⁃	GitHub Organization repo (SakuraMatrix)
 ⁃	Java 8+
 ⁃	Maven
-⁃	Junit 4+
-⁃	SLF4J: Log4J2, or Logback, etc.
-⁃	Reactor Netty (io.projectreactor.netty:reactor-netty:1.0.9)
+⁃	SLF4J
+⁃	Reactor Netty
 ⁃	Apache Cassandra w/ Datastax driver
 ⁃	Spring Framework
 ⁃	Spring Core/Beans/Context
-⁃	Amazon Web Services (kinda optional)
+
+
+Project 1:Lemonade Stand application
+Restful API for a creating a simple lemonade stand that stores a customers id, name, drink, price total,  
+
+Technologies
+Java 8+
+Maven
+slf4j
+Spring Framework
+Cassandra DB
+Reactor Netty
+
+User stories
+Store:
+Store can check who's on the waiting list
+
+Store can update the customers name, order, and price
+
+Customer:
+Customer can put their name and order down
+
+
+Usage
+Compile
+To compile the program use: mvn compile
+
+Run
+To run the program on the command line: mvn exec:java -Dexec.mainClass=App
+
+Clean
+To clean up artifacts created by prior builds:
+mvn clean
+
+RESTful API endpoints
+GET /orders/{id}: Retrieves the user information based on the given account ID
+DELETE orders/{id}: Removes a user from the database based on the given account ID if the account balance is 0
+POST orders: Adds a new order to the database
+
+
+Future Work
+Work on testing
+
+Set endpoints to update user information
+Improve current endpoints
